@@ -3,7 +3,6 @@ package gopwa
 import (
 	"encoding/base64"
 	"encoding/xml"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strings"
@@ -74,22 +73,19 @@ func (pwa PayWithAmazon) Do(amazonReq Request, response interface{}) error {
 	}
 	defer resp.Body.Close()
 
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return err
-	}
+	decoder := xml.NewDecoder(resp.Body)
 
 	if resp.StatusCode >= 400 {
-		return pwa.handleAmazonError(resp.StatusCode, body)
+		return pwa.handleAmazonError(resp.StatusCode, decoder)
 	}
 
-	return xml.Unmarshal(body, response)
+	return decoder.Decode(response)
 }
 
-func (pwa PayWithAmazon) handleAmazonError(statusCode int, body []byte) error {
+func (pwa PayWithAmazon) handleAmazonError(statusCode int, decoder *xml.Decoder) error {
 	responseError := &ErrorResponse{StatusCode: statusCode}
 
-	if err := xml.Unmarshal(body, responseError); err != nil {
+	if err := decoder.Decode(responseError); err != nil {
 		return err
 	}
 
