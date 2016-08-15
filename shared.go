@@ -5,6 +5,10 @@ import (
 	"time"
 )
 
+type ResponseMetadata struct {
+	RequestId string
+}
+
 type OrderTotal struct {
 	CurrencyCode string
 	Amount       string
@@ -203,4 +207,9 @@ type RefundDetails struct {
 	CreationTimestamp time.Time
 	RefundStatus      Status
 	SoftDescriptor    string
+}
+
+type Message struct {
+	Locale string
+	Text   string
 }
