@@ -1,9 +1,16 @@
 package gopwa
 
 import (
+	"encoding/base64"
+	"encoding/xml"
+	"net/http"
+	"net/http/httptest"
+	"net/url"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 )
 
 func Test_ItDefaultsToSandboxIfEmptyEnvironmentPassed(t *testing.T) {
@@ -13,3 +20,228 @@ func Test_ItDefaultsToSandboxIfEmptyEnvironmentPassed(t *testing.T) {
 	assert.Equal(t, string(expectedPath), ap.Endpoint.Path)
 }
 
+func Test_ItStripsContentLengthHeader(t *testing.T) {
+	mockRequest := setupMockRequest(url.Values{})
+
+	var wasCalled bool
+	assertEncodedForm := func(w http.ResponseWriter, r *http.Request) {
+		wasCalled = true
+		w.WriteHeader(500)
+
+		assert.Equal(t, "", r.Header.Get("Content-Length"))
+	}
+
+	client, server := setupTestHttp(assertEncodedForm)
+	defer server.Close()
+
+	ap := setupAmazonPayments(client, server.URL)
+
+	ap.Do(mockRequest, &map[string]interface{}{})
+
+	assert.True(t, wasCalled)
+}
+
+func Test_ItAddsContentTypeHeader(t *testing.T) {
+	mockRequest := setupMockRequest(url.Values{})
+
+	var wasCalled bool
+	assertEncodedForm := func(w http.ResponseWriter, r *http.Request) {
+		wasCalled = true
+		w.WriteHeader(500)
+
+		assert.Equal(t, "application/x-www-form-urlencoded", r.Header.Get("Content-Type"))
+	}
+
+	client, server := setupTestHttp(assertEncodedForm)
+	defer server.Close()
+
+	ap := setupAmazonPayments(client, server.URL)
+
+	ap.Do(mockRequest, map[string]interface{}{})
+
+	assert.True(t, wasCalled)
+}
+
+func Test_ItSetsAppropriateUserAgentHeader(t *testing.T) {
+	mockRequest := setupMockRequest(url.Values{})
+
+	var wasCalled bool
+	assertEncodedForm := func(w http.ResponseWriter, r *http.Request) {
+		wasCalled = true
+		w.WriteHeader(500)
+
+		assert.Equal(t, UserAgent+"/"+Version, r.Header.Get("User-Agent"))
+	}
+
+	client, server := setupTestHttp(assertEncodedForm)
+	defer server.Close()
+
+	ap := setupAmazonPayments(client, server.URL)
+
+	ap.Do(mockRequest, map[string]interface{}{})
+
+	assert.True(t, wasCalled)
+}
+
+func Test_ItEncodesAmazonRequestIntoUrlEncodedForm(t *testing.T) {
+	action := "MockRequest"
+	awsAccessKeyId := "bcd234"
+	sellerID := "abc123"
+
+	mockRequest := setupMockRequest(url.Values{
+		"T1": []string{"a"},
+		"T2": []string{"b"},
+	})
+
+	sigMethod := "Mock256"
+	sigVersion := "1"
+	sig := "abcdefghijkl"
+	mockSignatory := &MockSignatory{}
+	mockSignatory.On("Method").Return(sigMethod)
+	mockSignatory.On("Version").Return(sigVersion)
+	mockSignatory.On("Sign", mock.AnythingOfType("string")).Return([]byte(sig))
+
+	NowForce(time.Now())
+	defer NowReset()
+
+	expectedForm := url.Values{
+		"Action":           []string{action},
+		"AWSAccessKeyId":   []string{awsAccessKeyId},
+		"SellerId":         []string{sellerID},
+		"Timestamp":        []string{Now().UTC().Format("2006-01-02T15:04:05Z")},
+		"Version":          []string{V20130101},
+		"SignatureMethod":  []string{sigMethod},
+		"SignatureVersion": []string{sigVersion},
+		"Signature":        []string{base64.StdEncoding.EncodeToString([]byte(sig))},
+		"T1":               []string{"a"},
+		"T2":               []string{"b"},
+	}
+
+	var wasCalled bool
+	assertEncodedForm := func(w http.ResponseWriter, r *http.Request) {
+		wasCalled = true
+		w.WriteHeader(500)
+
+		assert.NoError(t, r.ParseForm())
+
+		assert.Equal(t, expectedForm, r.Form)
+	}
+
+	client, server := setupTestHttp(assertEncodedForm)
+	defer server.Close()
+
+	ap := setupAmazonPayments(client, server.URL)
+	ap.Signatory = mockSignatory
+
+	ap.Do(mockRequest, map[string]interface{}{})
+
+	assert.True(t, wasCalled)
+}
+
+func Test_ItDecodesResponseBodyIntoResponseObject(t *testing.T) {
+	type Email struct {
+		Where string `xml:"where,attr"`
+		Addr  string
+	}
+	type Address struct {
+		City, State string
+	}
+	type Result struct {
+		XMLName xml.Name `xml:"Person"`
+		Name    string   `xml:"FullName"`
+		Phone   string
+		Email   []Email
+		Groups  []string `xml:"Group>Value"`
+		Address
+	}
+
+	mockRequest := setupMockRequest(url.Values{})
+	expectedResponse := &Result{
+		XMLName: xml.Name{
+			Space: "",
+			Local: "Person",
+		},
+		Name:  "Grace R. Emlin",
+		Phone: "",
+		Email: []Email{
+			Email{
+				Where: "home",
+				Addr:  "gre@example.com",
+			},
+			{
+				Where: "work",
+				Addr:  "gre@work.com",
+			},
+		},
+		Groups: []string{
+			"Friends", "Squash",
+		},
+		Address: Address{
+			City:  "Hanga Roa",
+			State: "Easter Island",
+		},
+	}
+
+	var wasCalled bool
+	assertEncodedForm := func(w http.ResponseWriter, r *http.Request) {
+		wasCalled = true
+
+		w.Write([]byte(`
+		<Person>
+			<FullName>Grace R. Emlin</FullName>
+			<Company>Example Inc.</Company>
+			<Email where="home">
+			<Addr>gre@example.com</Addr>
+			</Email>
+			<Email where='work'>
+			<Addr>gre@work.com</Addr>
+			</Email>
+			<Group>
+			<Value>Friends</Value>
+			<Value>Squash</Value>
+			</Group>
+			<City>Hanga Roa</City>
+			<State>Easter Island</State>
+		</Person>
+		`))
+	}
+
+	client, server := setupTestHttp(assertEncodedForm)
+	defer server.Close()
+
+	ap := setupAmazonPayments(client, server.URL)
+
+	resp := &Result{}
+	assert.NoError(t, ap.Do(mockRequest, resp))
+
+	assert.True(t, wasCalled)
+	assert.Equal(t, expectedResponse, resp)
+}
+
+func setupTestHttp(serverFn func(w http.ResponseWriter, r *http.Request)) (*http.Client, *httptest.Server) {
+	server := httptest.NewServer(http.HandlerFunc(serverFn))
+
+	transport := &http.Transport{
+		Proxy: func(req *http.Request) (*url.URL, error) {
+			return url.Parse(server.URL)
+		},
+	}
+
+	return &http.Client{Transport: transport}, server
+}
+
+func setupMockRequest(v url.Values) *MockRequest {
+	mockRequest := &MockRequest{}
+	mockRequest.On("Action").Return("MockRequest")
+	mockRequest.On("AddValues", url.Values{}).Return(v)
+
+	return mockRequest
+}
+
+func setupAmazonPayments(client *http.Client, urlString string) *AmazonPayments {
+	ap := New("abc123", "bcd234", "", UK, "")
+	ap.Endpoint, _ = url.Parse(urlString)
+	ap.HttpClient = client
+
+	return ap
+}
