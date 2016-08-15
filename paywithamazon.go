@@ -80,16 +80,20 @@ func (pwa PayWithAmazon) Do(amazonReq Request, response interface{}) error {
 	}
 
 	if resp.StatusCode >= 400 {
-		responseError := &ErrorResponse{StatusCode: resp.StatusCode}
-
-		if err := xml.Unmarshal(body, responseError); err != nil {
-			return err
-		}
-
-		return responseError
+		return pwa.handleAmazonError(resp.StatusCode, body)
 	}
 
 	return xml.Unmarshal(body, response)
+}
+
+func (pwa PayWithAmazon) handleAmazonError(statusCode int, body []byte) error {
+	responseError := &ErrorResponse{StatusCode: statusCode}
+
+	if err := xml.Unmarshal(body, responseError); err != nil {
+		return err
+	}
+
+	return responseError
 }
 
 func (pwa PayWithAmazon) setHeaders(req *http.Request) *http.Request {
