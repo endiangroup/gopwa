@@ -1,13 +1,11 @@
 package gopwa
 
 import (
-	"encoding/xml"
 	"net/url"
 	"time"
 )
 
 type OrderTotal struct {
-	XMLName      xml.Name `xml:"OrderTotal"`
 	CurrencyCode string
 	Amount       string
 }
@@ -19,8 +17,19 @@ func (o OrderTotal) AddValues(prefix string, v url.Values) url.Values {
 	return v
 }
 
+type Price struct {
+	CurrencyCode string
+	Amount       string
+}
+
+func (p Price) AddValues(prefix string, v url.Values) url.Values {
+	v.Set(prefix+"Amount", p.Amount)
+	v.Set(prefix+"CurrencyCode", p.CurrencyCode)
+
+	return v
+}
+
 type SellerOrderAttributes struct {
-	XMLName           xml.Name `xml:"SellerOrderAttributes"`
 	SellerOrderId     string
 	StoreName         string
 	CustomInformation string
@@ -49,26 +58,29 @@ type Address struct {
 }
 
 type Buyer struct {
-	XMLName xml.Name `xml:"Buyer"`
-	Name    string
-	Email   string
-	Phone   string
+	Name  string
+	Email string
+	Phone string
 }
 
 type Destination struct {
-	XMLName             xml.Name `xml:"Destination"`
 	DestinationType     string
 	PhysicalDestination Address
 }
 
 type Constraint struct {
-	XMLName      xml.Name `xml:"Constraint"`
 	ConstraintID string
 	Description  string
 }
 
 type OrderReferenceStatus struct {
-	XMLName             xml.Name `xml:"OrderReferenceStatus"`
+	State               string
+	LastUpdateTimestamp time.Time
+	ReasonCode          string
+	ReasonDescription   string
+}
+
+type Status struct {
 	State               string
 	LastUpdateTimestamp time.Time
 	ReasonCode          string
@@ -76,10 +88,10 @@ type OrderReferenceStatus struct {
 }
 
 type OrderReferenceAttributes struct {
-	PlatformId string
-	SellerNote string
-	OrderTotal
-	SellerOrderAttributes
+	PlatformId            string
+	SellerNote            string
+	OrderTotal            OrderTotal
+	SellerOrderAttributes SellerOrderAttributes
 }
 
 func (o OrderReferenceAttributes) AddValues(prefix string, v url.Values) url.Values {
@@ -92,7 +104,6 @@ func (o OrderReferenceAttributes) AddValues(prefix string, v url.Values) url.Val
 }
 
 type OrderReferenceDetails struct {
-	XMLName                xml.Name `xml:"OrderReferenceDetails"`
 	AmazonOrderReferenceId string
 	SellerNote             string
 	PlatformId             string
@@ -103,9 +114,93 @@ type OrderReferenceDetails struct {
 	BillingAddress         Address
 	Constraints            []Constraint
 	IdList                 []string
-	Buyer
-	OrderTotal
-	Destination
-	OrderReferenceStatus
-	SellerOrderAttributes
+	Buyer                  Buyer
+	OrderTotal             OrderTotal
+	Destination            Destination
+	OrderReferenceStatus   OrderReferenceStatus
+	SellerOrderAttributes  SellerOrderAttributes
+}
+
+type AuthorizationDetails struct {
+	AmazonAuthorizationId       string
+	AuthorizationBillingAddress Address
+	AuthorizationReferenceId    string
+	SellerAuthorizationNote     string
+	AuthorizationAmount         Price
+	CapturedAmount              Price
+	AuthorizationFee            Price
+	IdList                      []string
+	CreationTimestamp           time.Time
+	ExpirationTimestamp         time.Time
+	AuthorizationStatus         Status
+	SoftDecline                 bool
+	CaptureNow                  bool
+	SoftDescriptor              string
+}
+
+type BillingAgreementAttributes struct {
+	PlatformId                       string
+	SellerNote                       string
+	SellerBillingAgreementAttributes SellerBillingAgreementAttributes
+}
+
+type SellerBillingAgreementAttributes struct {
+	SellerBillingAgreementId string
+	StoreName                string
+	CustomInformation        string
+}
+
+type BillingAgreementDetails struct {
+	AmazonBillingAgreementId         string
+	BillingAddress                   Address
+	SellerNote                       string
+	PlatformId                       string
+	ReleaseEnvironment               string
+	Constraints                      []Constraint
+	CreationTimestamp                time.Time
+	BillingAgreementConsent          bool
+	Buyer                            Buyer
+	Destination                      Destination
+	BillingAgreementLimits           BillingAgreementLimits
+	BillingAgreementStatus           BillingAgreementStatus
+	SellerBillingAgreementAttributes SellerBillingAgreementAttributes
+}
+
+type BillingAgreementLimits struct {
+	AmountLimitPerTimePeriod Price
+	TimePeriodStartDate      time.Time
+	TimePeriodEndDate        time.Time
+	CurrentRemainingBalance  Price
+}
+
+type BillingAgreementStatus struct {
+	State                string
+	LastUpdatedTimestamp time.Time
+	ReasonCode           string
+	ReasonDescription    string
+}
+
+type CaptureDetails struct {
+	AmazonCaptureId    string
+	CaptureReferenceId string
+	SellerCaptureNote  string
+	CaptureAmount      Price
+	RefundedAmount     Price
+	CaptureFee         Price
+	IdList             []string
+	CreationTimestamp  time.Time
+	CaptureStatus      Status
+	SoftDescriptor     string
+}
+
+type RefundDetails struct {
+	AmazonRefundId    string
+	RefundReferenceId string
+	SellerRefundNote  string
+	RefundType        string
+	RefundAmount      Price
+	FeeRefunded       Price
+	CreationTimestamp time.Time
+	RefundStatus      Status
+	SoftDescriptor    string
 }
