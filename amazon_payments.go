@@ -3,7 +3,6 @@ package gopwa
 import (
 	"encoding/base64"
 	"encoding/xml"
-	"errors"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -69,25 +68,35 @@ func (ap AmazonPayments) Do(amazonReq Request, response interface{}) error {
 		return err
 	}
 
-	req.ContentLength = 0
-	req.Header.Del("Content-Length")
-	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-	req.Header.Set("User-Agent", UserAgent+"/"+Version)
-
-	resp, err := ap.HttpClient.Do(req)
+	resp, err := ap.HttpClient.Do(ap.setHeaders(req))
 	if err != nil {
 		return err
 	}
 	defer resp.Body.Close()
-
-	if resp.StatusCode >= 400 {
-		return errors.New("!")
-	}
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return err
 	}
 
+	if resp.StatusCode >= 400 {
+		responseError := &ErrorResponse{StatusCode: resp.StatusCode}
+
+		if err := xml.Unmarshal(body, responseError); err != nil {
+			return err
+		}
+
+		return responseError
+	}
+
 	return xml.Unmarshal(body, response)
+}
+
+func (ap AmazonPayments) setHeaders(req *http.Request) *http.Request {
+	req.ContentLength = 0
+	req.Header.Del("Content-Length")
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	req.Header.Set("User-Agent", UserAgent+"/"+Version)
+
+	return req
 }

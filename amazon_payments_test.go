@@ -183,7 +183,7 @@ func Test_ItDecodesResponseBodyIntoResponseObject(t *testing.T) {
 	}
 
 	var wasCalled bool
-	assertEncodedForm := func(w http.ResponseWriter, r *http.Request) {
+	assertResponse := func(w http.ResponseWriter, r *http.Request) {
 		wasCalled = true
 
 		w.Write([]byte(`
@@ -191,10 +191,10 @@ func Test_ItDecodesResponseBodyIntoResponseObject(t *testing.T) {
 			<FullName>Grace R. Emlin</FullName>
 			<Company>Example Inc.</Company>
 			<Email where="home">
-			<Addr>gre@example.com</Addr>
+				<Addr>gre@example.com</Addr>
 			</Email>
 			<Email where='work'>
-			<Addr>gre@work.com</Addr>
+				<Addr>gre@work.com</Addr>
 			</Email>
 			<Group>
 			<Value>Friends</Value>
@@ -206,7 +206,7 @@ func Test_ItDecodesResponseBodyIntoResponseObject(t *testing.T) {
 		`))
 	}
 
-	client, server := setupTestHttp(assertEncodedForm)
+	client, server := setupTestHttp(assertResponse)
 	defer server.Close()
 
 	ap := setupAmazonPayments(client, server.URL)
@@ -216,6 +216,62 @@ func Test_ItDecodesResponseBodyIntoResponseObject(t *testing.T) {
 
 	assert.True(t, wasCalled)
 	assert.Equal(t, expectedResponse, resp)
+}
+
+func Test_ItReturnsDecodedResponseErrorOnRequestError(t *testing.T) {
+	mockRequest := setupMockRequest(url.Values{})
+	expectedError := &ErrorResponse{
+		StatusCode: 400,
+		RequestID:  "b7afc6c3-6f75-4707-bcf4-0475ad23162c",
+		Errors: []Error{
+			Error{
+				Type:    "Sender",
+				Code:    "InvalidClientTokenId",
+				Message: " The AWS Access Key Id you provided does not exist in our records. ",
+				Detail:  "com.amazonservices.mws.model.Error$Detail@17b6643",
+			},
+			Error{
+				Type:    "Sender",
+				Code:    "InvalidSignature",
+				Message: " The signature you provided does not match the expected. ",
+				Detail:  "com.amazonservices.mws.model.Error$Detail@17b6643",
+			},
+		},
+	}
+
+	var wasCalled bool
+	responseError := func(w http.ResponseWriter, r *http.Request) {
+		wasCalled = true
+
+		w.WriteHeader(400)
+		w.Write([]byte(`
+		<ErrorResponse xmlns="http://mws.amazonservices.com/doc/2009-01-01/">
+			<Error>
+				<Type>Sender</Type>
+				<Code>InvalidClientTokenId</Code>
+				<Message> The AWS Access Key Id you provided does not exist in our records. </Message>
+				<Detail>com.amazonservices.mws.model.Error$Detail@17b6643</Detail>
+			</Error>
+			<Error>
+				<Type>Sender</Type>
+				<Code>InvalidSignature</Code>
+				<Message> The signature you provided does not match the expected. </Message>
+				<Detail>com.amazonservices.mws.model.Error$Detail@17b6643</Detail>
+			</Error>
+			<RequestID>b7afc6c3-6f75-4707-bcf4-0475ad23162c</RequestID>
+		</ErrorResponse>
+		`))
+	}
+
+	client, server := setupTestHttp(responseError)
+	defer server.Close()
+
+	ap := setupAmazonPayments(client, server.URL)
+
+	err := ap.Do(mockRequest, map[string]interface{}{})
+
+	assert.True(t, wasCalled)
+	assert.Equal(t, expectedError, err)
 }
 
 func setupTestHttp(serverFn func(w http.ResponseWriter, r *http.Request)) (*http.Client, *httptest.Server) {
