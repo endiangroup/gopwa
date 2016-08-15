@@ -39,11 +39,11 @@ func (h V2Hmac256Signatory) Version() string {
 }
 
 // See: http://docs.aws.amazon.com/general/latest/gr/signature-version-2.html
-func (ap AmazonPayments) prepareSignature(method string, queryParams url.Values) string {
+func (pwa PayWithAmazon) prepareSignature(method string, queryParams url.Values) string {
 	return strings.Join([]string{
 		method,
-		ap.Endpoint.Host,
-		ap.Endpoint.Path,
+		pwa.Endpoint.Host,
+		pwa.Endpoint.Path,
 		escapeCharacters(queryParams.Encode()),
 	}, "\n")
 }

@@ -10,7 +10,7 @@ import (
 
 func Test_ItEscapesCharactersInStringToSign(t *testing.T) {
 	method := "GET"
-	ap := New(
+	pwa := New(
 		"abc123",
 		"bcd234",
 		"a1b2c3d4e5",
@@ -26,7 +26,7 @@ func Test_ItEscapesCharactersInStringToSign(t *testing.T) {
 		"A~B":            []string{""},
 	}
 
-	toBeSigned := ap.prepareSignature(method, queryParams)
+	toBeSigned := pwa.prepareSignature(method, queryParams)
 
 	assert.NotContains(t, toBeSigned, "+")
 	assert.NotContains(t, toBeSigned, "*")
@@ -43,14 +43,14 @@ func Test_ItEscapesCharactersInStringToSign(t *testing.T) {
 // See: http://docs.aws.amazon.com/general/latest/gr/signature-version-2.html
 func Test_ItGeneratesExpectedHmacSHA256(t *testing.T) {
 	method := "GET"
-	ap := New(
+	pwa := New(
 		"",
 		"",
 		"wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY",
 		UK,
 		"",
 	)
-	ap.Endpoint, _ = url.Parse("https://elasticmapreduce.amazonaws.com/")
+	pwa.Endpoint, _ = url.Parse("https://elasticmapreduce.amazonaws.com/")
 
 	queryParams := url.Values{
 		"SignatureMethod":  []string{"HmacSHA256"},
@@ -61,10 +61,10 @@ func Test_ItGeneratesExpectedHmacSHA256(t *testing.T) {
 		"AWSAccessKeyId":   []string{"AKIAIOSFODNN7EXAMPLE"},
 	}
 
-	toBeSigned := ap.prepareSignature(method, queryParams)
+	toBeSigned := pwa.prepareSignature(method, queryParams)
 
 	rawExpectedSignature, err := base64.StdEncoding.DecodeString("i91nKc4PWAt0JJIdXwz9HxZCJDdiy6cf/Mj6vPxyYIs=")
 	assert.NoError(t, err)
 
-	assert.Equal(t, rawExpectedSignature, ap.Signatory.Sign(toBeSigned))
+	assert.Equal(t, rawExpectedSignature, pwa.Signatory.Sign(toBeSigned))
 }

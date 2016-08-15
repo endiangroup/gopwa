@@ -14,7 +14,7 @@ const (
 	Version   = "0.0.1"
 )
 
-type AmazonPayments struct {
+type PayWithAmazon struct {
 	AccessKeyID string
 	SellerID    string
 	HttpClient  *http.Client
@@ -23,12 +23,12 @@ type AmazonPayments struct {
 	Version     string
 }
 
-func New(sellerID, accessKeyID, accessKeySecret string, region Region, environment Environment) *AmazonPayments {
+func New(sellerID, accessKeyID, accessKeySecret string, region Region, environment Environment) *PayWithAmazon {
 	if environment == "" {
 		environment = Sandbox
 	}
 
-	return &AmazonPayments{
+	return &PayWithAmazon{
 		AccessKeyID: accessKeyID,
 		SellerID:    sellerID,
 		Endpoint: &url.URL{
@@ -44,31 +44,31 @@ func New(sellerID, accessKeyID, accessKeySecret string, region Region, environme
 	}
 }
 
-func (ap AmazonPayments) buildForm(v url.Values, action, method string) url.Values {
+func (pwa PayWithAmazon) buildForm(v url.Values, action, method string) url.Values {
 	v.Set("Action", action)
-	v.Set("AWSAccessKeyId", ap.AccessKeyID)
-	v.Set("SellerId", ap.SellerID)
+	v.Set("AWSAccessKeyId", pwa.AccessKeyID)
+	v.Set("SellerId", pwa.SellerID)
 	v.Set("Timestamp", Now().UTC().Format("2006-01-02T15:04:05Z"))
-	v.Set("Version", ap.Version)
-	v.Set("SignatureMethod", ap.Signatory.Method())
-	v.Set("SignatureVersion", ap.Signatory.Version())
+	v.Set("Version", pwa.Version)
+	v.Set("SignatureMethod", pwa.Signatory.Method())
+	v.Set("SignatureVersion", pwa.Signatory.Version())
 	v.Set("Signature", base64.StdEncoding.EncodeToString(
-		ap.Signatory.Sign(ap.prepareSignature(method, v)),
+		pwa.Signatory.Sign(pwa.prepareSignature(method, v)),
 	))
 
 	return v
 }
 
-func (ap AmazonPayments) Do(amazonReq Request, response interface{}) error {
+func (pwa PayWithAmazon) Do(amazonReq Request, response interface{}) error {
 	method := "POST"
-	form := ap.buildForm(amazonReq.AddValues(url.Values{}), amazonReq.Action(), method)
+	form := pwa.buildForm(amazonReq.AddValues(url.Values{}), amazonReq.Action(), method)
 
-	req, err := http.NewRequest(method, ap.Endpoint.String(), strings.NewReader(form.Encode()))
+	req, err := http.NewRequest(method, pwa.Endpoint.String(), strings.NewReader(form.Encode()))
 	if err != nil {
 		return err
 	}
 
-	resp, err := ap.HttpClient.Do(ap.setHeaders(req))
+	resp, err := pwa.HttpClient.Do(pwa.setHeaders(req))
 	if err != nil {
 		return err
 	}
@@ -92,7 +92,7 @@ func (ap AmazonPayments) Do(amazonReq Request, response interface{}) error {
 	return xml.Unmarshal(body, response)
 }
 
-func (ap AmazonPayments) setHeaders(req *http.Request) *http.Request {
+func (pwa PayWithAmazon) setHeaders(req *http.Request) *http.Request {
 	req.ContentLength = 0
 	req.Header.Del("Content-Length")
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")

@@ -14,10 +14,10 @@ import (
 )
 
 func Test_ItDefaultsToSandboxIfEmptyEnvironmentPassed(t *testing.T) {
-	ap := New("", "", "", UK, "")
+	pwa := New("", "", "", UK, "")
 
 	expectedPath := Sandbox + "/2013-01-01"
-	assert.Equal(t, string(expectedPath), ap.Endpoint.Path)
+	assert.Equal(t, string(expectedPath), pwa.Endpoint.Path)
 }
 
 func Test_ItStripsContentLengthHeader(t *testing.T) {
@@ -34,9 +34,9 @@ func Test_ItStripsContentLengthHeader(t *testing.T) {
 	client, server := setupTestHttp(assertEncodedForm)
 	defer server.Close()
 
-	ap := setupAmazonPayments(client, server.URL)
+	pwa := setupAmazonPayments(client, server.URL)
 
-	ap.Do(mockRequest, &map[string]interface{}{})
+	pwa.Do(mockRequest, &map[string]interface{}{})
 
 	assert.True(t, wasCalled)
 }
@@ -55,9 +55,9 @@ func Test_ItAddsContentTypeHeader(t *testing.T) {
 	client, server := setupTestHttp(assertEncodedForm)
 	defer server.Close()
 
-	ap := setupAmazonPayments(client, server.URL)
+	pwa := setupAmazonPayments(client, server.URL)
 
-	ap.Do(mockRequest, map[string]interface{}{})
+	pwa.Do(mockRequest, map[string]interface{}{})
 
 	assert.True(t, wasCalled)
 }
@@ -76,9 +76,9 @@ func Test_ItSetsAppropriateUserAgentHeader(t *testing.T) {
 	client, server := setupTestHttp(assertEncodedForm)
 	defer server.Close()
 
-	ap := setupAmazonPayments(client, server.URL)
+	pwa := setupAmazonPayments(client, server.URL)
 
-	ap.Do(mockRequest, map[string]interface{}{})
+	pwa.Do(mockRequest, map[string]interface{}{})
 
 	assert.True(t, wasCalled)
 }
@@ -130,10 +130,10 @@ func Test_ItEncodesAmazonRequestIntoUrlEncodedForm(t *testing.T) {
 	client, server := setupTestHttp(assertEncodedForm)
 	defer server.Close()
 
-	ap := setupAmazonPayments(client, server.URL)
-	ap.Signatory = mockSignatory
+	pwa := setupAmazonPayments(client, server.URL)
+	pwa.Signatory = mockSignatory
 
-	ap.Do(mockRequest, map[string]interface{}{})
+	pwa.Do(mockRequest, map[string]interface{}{})
 
 	assert.True(t, wasCalled)
 }
@@ -209,10 +209,10 @@ func Test_ItDecodesResponseBodyIntoResponseObject(t *testing.T) {
 	client, server := setupTestHttp(assertResponse)
 	defer server.Close()
 
-	ap := setupAmazonPayments(client, server.URL)
+	pwa := setupAmazonPayments(client, server.URL)
 
 	resp := &Result{}
-	assert.NoError(t, ap.Do(mockRequest, resp))
+	assert.NoError(t, pwa.Do(mockRequest, resp))
 
 	assert.True(t, wasCalled)
 	assert.Equal(t, expectedResponse, resp)
@@ -266,9 +266,9 @@ func Test_ItReturnsDecodedResponseErrorOnRequestError(t *testing.T) {
 	client, server := setupTestHttp(responseError)
 	defer server.Close()
 
-	ap := setupAmazonPayments(client, server.URL)
+	pwa := setupAmazonPayments(client, server.URL)
 
-	err := ap.Do(mockRequest, map[string]interface{}{})
+	err := pwa.Do(mockRequest, map[string]interface{}{})
 
 	assert.True(t, wasCalled)
 	assert.Equal(t, expectedError, err)
@@ -294,10 +294,10 @@ func setupMockRequest(v url.Values) *MockRequest {
 	return mockRequest
 }
 
-func setupAmazonPayments(client *http.Client, urlString string) *AmazonPayments {
-	ap := New("abc123", "bcd234", "", UK, "")
-	ap.Endpoint, _ = url.Parse(urlString)
-	ap.HttpClient = client
+func setupAmazonPayments(client *http.Client, urlString string) *PayWithAmazon {
+	pwa := New("abc123", "bcd234", "", UK, "")
+	pwa.Endpoint, _ = url.Parse(urlString)
+	pwa.HttpClient = client
 
-	return ap
+	return pwa
 }
