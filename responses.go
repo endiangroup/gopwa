@@ -3,8 +3,8 @@ package gopwa
 import "time"
 
 type AuthorizeResponse struct {
-	AuthorizeResult
-	ResponseMetadata
+	AuthorizeResult  AuthorizeResult
+	ResponseMetadata ResponseMetadata
 }
 
 type AuthorizeResult struct {
@@ -12,12 +12,12 @@ type AuthorizeResult struct {
 }
 
 type CancelOrderReferenceResponse struct {
-	ResponseMetadata
+	ResponseMetadata ResponseMetadata
 }
 
 type CaptureResponse struct {
-	CaptureResult
-	ResponseMetadata
+	CaptureResult    CaptureResult
+	ResponseMetadata ResponseMetadata
 }
 
 type CaptureResult struct {
@@ -25,20 +25,20 @@ type CaptureResult struct {
 }
 
 type CloseAuthorizationResponse struct {
-	ResponseMetadata
+	ResponseMetadata ResponseMetadata
 }
 
 type CloseOrderReferenceResponse struct {
-	ResponseMetadata
+	ResponseMetadata ResponseMetadata
 }
 
 type ConfirmOrderReferenceResponse struct {
-	ResponseMetadata
+	ResponseMetadata ResponseMetadata
 }
 
 type CreateOrderReferenceForIdResponse struct {
-	CreateOrderReferenceForIdResult
-	ResponseMetadata
+	CreateOrderReferenceForIdResult CreateOrderReferenceForIdResult
+	ResponseMetadata                ResponseMetadata
 }
 
 type CreateOrderReferenceForIdResult struct {
@@ -46,17 +46,17 @@ type CreateOrderReferenceForIdResult struct {
 }
 
 type GetAuthorizationDetailsResponse struct {
-	GetAuthorizationDetailsResult
-	ResponseMetadata
+	GetAuthorizationDetailsResult GetAuthorizationDetailsResult
+	ResponseMetadata              ResponseMetadata
 }
 
 type GetAuthorizationDetailsResult struct {
-	AuthorizationDetails
+	AuthorizationDetails AuthorizationDetails
 }
 
 type GetCaptureDetailsResponse struct {
-	GetCaptureDetailsResult
-	ResponseMetadata
+	GetCaptureDetailsResult GetCaptureDetailsResult
+	ResponseMetadata        ResponseMetadata
 }
 
 type GetCaptureDetailsResult struct {
@@ -64,8 +64,8 @@ type GetCaptureDetailsResult struct {
 }
 
 type GetOrderReferenceDetailsResponse struct {
-	GetOrderReferenceDetailsResult
-	ResponseMetadata
+	GetOrderReferenceDetailsResult GetOrderReferenceDetailsResult
+	ResponseMetadata               ResponseMetadata
 }
 
 type GetOrderReferenceDetailsResult struct {
@@ -73,8 +73,8 @@ type GetOrderReferenceDetailsResult struct {
 }
 
 type GetRefundDetailsResponse struct {
-	GetRefundDetailsResult
-	ResponseMetadata
+	GetRefundDetailsResult GetRefundDetailsResult
+	ResponseMetadata       ResponseMetadata
 }
 
 type GetRefundDetailsResult struct {
@@ -82,8 +82,8 @@ type GetRefundDetailsResult struct {
 }
 
 type GetServiceStatusResponse struct {
-	GetServiceStatusResult
-	ResponseMetadata
+	GetServiceStatusResult GetServiceStatusResult
+	ResponseMetadata       ResponseMetadata
 }
 
 type GetServiceStatusResult struct {
@@ -94,8 +94,8 @@ type GetServiceStatusResult struct {
 }
 
 type RefundResponse struct {
-	RefundResult
-	ResponseMetadata
+	RefundResult     RefundResult
+	ResponseMetadata ResponseMetadata
 }
 
 type RefundResult struct {
@@ -103,8 +103,8 @@ type RefundResult struct {
 }
 
 type SetOrderReferenceDetailsResponse struct {
-	SetOrderReferenceDetailsResult
-	ResponseMetadata
+	SetOrderReferenceDetailsResult SetOrderReferenceDetailsResult
+	ResponseMetadata               ResponseMetadata
 }
 
 type SetOrderReferenceDetailsResult struct {
