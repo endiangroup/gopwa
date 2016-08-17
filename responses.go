@@ -3,87 +3,87 @@ package gopwa
 import "time"
 
 type AuthorizeResponse struct {
-	AuthorizeResult  AuthorizeResult
-	ResponseMetadata ResponseMetadata
+	Result   AuthorizeResult  `xml:"AuthorizeResult"`
+	Metadata ResponseMetadata `xml:"ResponseMetadata"`
 }
 
 type AuthorizeResult struct {
-	AuthorizationDetails AuthorizationDetails
+	AuthorizationDetails `xml:"AuthorizationDetails"`
 }
 
 type CancelOrderReferenceResponse struct {
-	ResponseMetadata ResponseMetadata
+	Metadata ResponseMetadata `xml:"ResponseMetadata"`
 }
 
 type CaptureResponse struct {
-	CaptureResult    CaptureResult
-	ResponseMetadata ResponseMetadata
+	Result   CaptureResult    `xml:"CaptureResult"`
+	Metadata ResponseMetadata `xml:"ResponseMetadata"`
 }
 
 type CaptureResult struct {
-	CaptureDetails CaptureDetails
+	CaptureDetails `xml:"CaptureDetails"`
 }
 
 type CloseAuthorizationResponse struct {
-	ResponseMetadata ResponseMetadata
+	Metadata ResponseMetadata `xml:"ResponseMetadata"`
 }
 
 type CloseOrderReferenceResponse struct {
-	ResponseMetadata ResponseMetadata
+	Metadata ResponseMetadata `xml:"ResponseMetadata"`
 }
 
 type ConfirmOrderReferenceResponse struct {
-	ResponseMetadata ResponseMetadata
+	Metadata ResponseMetadata `xml:"ResponseMetadata"`
 }
 
 type CreateOrderReferenceForIdResponse struct {
-	CreateOrderReferenceForIdResult CreateOrderReferenceForIdResult
-	ResponseMetadata                ResponseMetadata
+	Result   CreateOrderReferenceForIdResult `xml:"CreateOrderReferenceForIdResult"`
+	Metadata ResponseMetadata                `xml:"ResponseMetadata"`
 }
 
 type CreateOrderReferenceForIdResult struct {
-	OrderReferenceDetails OrderReferenceDetails
+	OrderReferenceDetails `xml:"OrderReferenceDetails"`
 }
 
 type GetAuthorizationDetailsResponse struct {
-	GetAuthorizationDetailsResult GetAuthorizationDetailsResult
-	ResponseMetadata              ResponseMetadata
+	Result   GetAuthorizationDetailsResult `xml:"GetAuthorizationDetailsResult"`
+	Metadata ResponseMetadata              `xml:"ResponseMetadata"`
 }
 
 type GetAuthorizationDetailsResult struct {
-	AuthorizationDetails AuthorizationDetails
+	AuthorizationDetails `xml:"AuthorizationDetails"`
 }
 
 type GetCaptureDetailsResponse struct {
-	GetCaptureDetailsResult GetCaptureDetailsResult
-	ResponseMetadata        ResponseMetadata
+	Result   GetCaptureDetailsResult `xml:"GetCaptureDetailsResult"`
+	Metadata ResponseMetadata        `xml:"ResponseMetadata"`
 }
 
 type GetCaptureDetailsResult struct {
-	CaptureDetails CaptureDetails
+	CaptureDetails `xml:"CaptureDetails"`
 }
 
 type GetOrderReferenceDetailsResponse struct {
-	GetOrderReferenceDetailsResult GetOrderReferenceDetailsResult
-	ResponseMetadata               ResponseMetadata
+	Result   GetOrderReferenceDetailsResult `xml:"GetOrderReferenceDetailsResult"`
+	Metadata ResponseMetadata               `xml:"ResponseMetadata"`
 }
 
 type GetOrderReferenceDetailsResult struct {
-	OrderReferenceDetails OrderReferenceDetails
+	OrderReferenceDetails `xml:"OrderReferenceDetails"`
 }
 
 type GetRefundDetailsResponse struct {
-	GetRefundDetailsResult GetRefundDetailsResult
-	ResponseMetadata       ResponseMetadata
+	Result   GetRefundDetailsResult `xml:"GetRefundDetailsResult"`
+	Metadata ResponseMetadata       `xml:"ResponseMetadata"`
 }
 
 type GetRefundDetailsResult struct {
-	RefundDetails RefundDetails
+	RefundDetails `xml:"RefundDetails"`
 }
 
 type GetServiceStatusResponse struct {
-	GetServiceStatusResult GetServiceStatusResult
-	ResponseMetadata       ResponseMetadata
+	Result   GetServiceStatusResult `xml:"GetServiceStatusResult"`
+	Metadata ResponseMetadata       `xml:"ResponseMetadata"`
 }
 
 type GetServiceStatusResult struct {
@@ -94,19 +94,19 @@ type GetServiceStatusResult struct {
 }
 
 type RefundResponse struct {
-	RefundResult     RefundResult
-	ResponseMetadata ResponseMetadata
+	Result   RefundResult     `xml:"RefundResult"`
+	Metadata ResponseMetadata `xml:"ResponseMetadata"`
 }
 
 type RefundResult struct {
-	RefundDetails RefundDetails
+	RefundDetails `xml:"RefundDetails"`
 }
 
 type SetOrderReferenceDetailsResponse struct {
-	SetOrderReferenceDetailsResult SetOrderReferenceDetailsResult
-	ResponseMetadata               ResponseMetadata
+	Result   SetOrderReferenceDetailsResult `xml:"SetOrderReferenceDetailsResult"`
+	Metadata ResponseMetadata               `xml:"ResponseMetadata"`
 }
 
 type SetOrderReferenceDetailsResult struct {
-	OrderReferenceDetails OrderReferenceDetails
+	OrderReferenceDetails `xml:"OrderReferenceDetails"`
 }
