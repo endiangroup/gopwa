@@ -274,6 +274,85 @@ func Test_ItReturnsDecodedResponseErrorOnRequestError(t *testing.T) {
 	assert.Equal(t, expectedError, err)
 }
 
+func Test_ItRetriesFaild5XXRequestsWithBackoffDurationWhenHandleThrottlingIsTrue(t *testing.T) {
+	mockRequest := setupMockRequest(url.Values{})
+	BackoffDurations = []time.Duration{
+		0 * time.Millisecond,
+		25 * time.Millisecond,
+		50 * time.Millisecond,
+		75 * time.Millisecond,
+	}
+
+	callTimestamps := []time.Time{}
+	var now time.Time
+	responseError := func(w http.ResponseWriter, r *http.Request) {
+		if len(callTimestamps) == 0 {
+			now = Now()
+		}
+		callTimestamps = append(callTimestamps, Now())
+
+		if len(callTimestamps)%2 == 0 {
+			w.WriteHeader(503)
+		} else {
+			w.WriteHeader(500)
+		}
+
+		w.Write([]byte(`
+		<ErrorResponse xmlns="http://mws.amazonservices.com/doc/2009-01-01/">
+			<Error>
+				<Type>Sender</Type>
+				<Code>RequestThrottled</Code>
+				<Message>The frequency of requests was greater than allowed.</Message>
+				<Detail>com.amazonservices.mws.model.Error$Detail@17b6643</Detail>
+			</Error>
+			<RequestID>b7afc6c3-6f75-4707-bcf4-0475ad23162c</RequestID>
+		</ErrorResponse>
+		`))
+	}
+
+	client, server := setupTestHttp(responseError)
+	defer server.Close()
+
+	pwa := setupAmazonPayments(client, server.URL)
+	pwa.HandleThrottling(true)
+
+	err := pwa.Do(mockRequest, map[string]interface{}{})
+	assert.NotNil(t, err)
+
+	assert.Len(t, callTimestamps, len(BackoffDurations))
+
+	assert.WithinDuration(t, now, callTimestamps[0], 10*time.Millisecond)
+	assert.WithinDuration(t, now.Add(BackoffDurations[1]), callTimestamps[1], 10*time.Millisecond)
+	assert.WithinDuration(t, now.Add(BackoffDurations[1]+BackoffDurations[2]), callTimestamps[2], 10*time.Millisecond)
+	assert.WithinDuration(t, now.Add(BackoffDurations[1]+BackoffDurations[2]+BackoffDurations[3]), callTimestamps[3], 10*time.Millisecond)
+}
+
+func Test_ItDoesntRetryFaildRequestsWhenHandleThrottlingIsFalse(t *testing.T) {
+	mockRequest := setupMockRequest(url.Values{})
+
+	var numberOfCalls uint
+	responseError := func(w http.ResponseWriter, r *http.Request) {
+		numberOfCalls++
+
+		w.WriteHeader(503)
+		w.Write([]byte(`
+		<ErrorResponse xmlns="http://mws.amazonservices.com/doc/2009-01-01/">
+		</ErrorResponse>
+		`))
+	}
+
+	client, server := setupTestHttp(responseError)
+	defer server.Close()
+
+	pwa := setupAmazonPayments(client, server.URL)
+	pwa.HandleThrottling(false)
+
+	err := pwa.Do(mockRequest, map[string]interface{}{})
+	assert.NotNil(t, err)
+
+	assert.True(t, numberOfCalls == 1)
+}
+
 func setupTestHttp(serverFn func(w http.ResponseWriter, r *http.Request)) (*http.Client, *httptest.Server) {
 	server := httptest.NewServer(http.HandlerFunc(serverFn))
 

@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"time"
 )
 
 const (
@@ -13,13 +14,21 @@ const (
 	Version   = "0.0.1"
 )
 
+var BackoffDurations = []time.Duration{
+	0 * time.Second,
+	1 * time.Second,
+	4 * time.Second,
+	10 * time.Second,
+}
+
 type PayWithAmazon struct {
-	AccessKeyID string
-	SellerID    string
-	HttpClient  *http.Client
-	Signatory   Signatory
-	Endpoint    *url.URL
-	ApiVersion  ApiVersion
+	AccessKeyID      string
+	SellerID         string
+	HttpClient       *http.Client
+	Signatory        Signatory
+	Endpoint         *url.URL
+	ApiVersion       ApiVersion
+	handleThrottling bool
 }
 
 func New(sellerID, accessKeyID, accessKeySecret string, region Region, environment Environment) *PayWithAmazon {
@@ -59,6 +68,12 @@ func (pwa PayWithAmazon) buildForm(v url.Values, action, method string) url.Valu
 }
 
 func (pwa PayWithAmazon) Do(amazonReq Request, response interface{}) error {
+	return pwa.do(amazonReq, response, 1)
+}
+
+func (pwa PayWithAmazon) do(amazonReq Request, response interface{}, attemptNumber int) error {
+	time.Sleep(BackoffDurations[attemptNumber-1])
+
 	method := "POST"
 	form := pwa.buildForm(amazonReq.AddValues(url.Values{}), amazonReq.Action(), method)
 
@@ -76,6 +91,10 @@ func (pwa PayWithAmazon) Do(amazonReq Request, response interface{}) error {
 	decoder := xml.NewDecoder(resp.Body)
 
 	if resp.StatusCode >= 400 {
+		if pwa.shouldBackoff(resp.StatusCode, attemptNumber) {
+			return pwa.do(amazonReq, response, attemptNumber+1)
+		}
+
 		return pwa.handleAmazonError(resp.StatusCode, decoder)
 	}
 
@@ -99,4 +118,14 @@ func (pwa PayWithAmazon) setHeaders(req *http.Request) *http.Request {
 	req.Header.Set("User-Agent", UserAgent+"/"+Version)
 
 	return req
+}
+
+func (pwa *PayWithAmazon) HandleThrottling(shouldHandleThrottling bool) {
+	pwa.handleThrottling = shouldHandleThrottling
+}
+
+func (pwa PayWithAmazon) shouldBackoff(statusCode int, attemptNumber int) bool {
+	return pwa.handleThrottling &&
+		(statusCode == 500 || statusCode == 503) &&
+		attemptNumber < len(BackoffDurations)
 }
