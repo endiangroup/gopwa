@@ -20,8 +20,10 @@ var Regions = []string{
 	JP: "mws.amazonservices.jp",
 }
 
+type ApiVersion string
+
 const (
-	V20130101 = "2013-01-01"
+	V20130101 ApiVersion = "2013-01-01"
 )
 
 type Environment string

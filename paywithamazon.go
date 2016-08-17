@@ -19,7 +19,7 @@ type PayWithAmazon struct {
 	HttpClient  *http.Client
 	Signatory   Signatory
 	Endpoint    *url.URL
-	Version     string
+	ApiVersion  ApiVersion
 }
 
 func New(sellerID, accessKeyID, accessKeySecret string, region Region, environment Environment) *PayWithAmazon {
@@ -33,13 +33,13 @@ func New(sellerID, accessKeyID, accessKeySecret string, region Region, environme
 		Endpoint: &url.URL{
 			Scheme: "https",
 			Host:   Regions[region],
-			Path:   strings.Join([]string{string(environment), V20130101}, "/"),
+			Path:   strings.Join([]string{string(environment), string(V20130101)}, "/"),
 		},
 		HttpClient: http.DefaultClient,
 		Signatory: V2Hmac256Signatory{
 			secret: accessKeySecret,
 		},
-		Version: V20130101,
+		ApiVersion: V20130101,
 	}
 }
 
@@ -48,7 +48,7 @@ func (pwa PayWithAmazon) buildForm(v url.Values, action, method string) url.Valu
 	v.Set("AWSAccessKeyId", pwa.AccessKeyID)
 	v.Set("SellerId", pwa.SellerID)
 	v.Set("Timestamp", Now().UTC().Format("2006-01-02T15:04:05Z"))
-	v.Set("Version", pwa.Version)
+	v.Set("Version", string(pwa.ApiVersion))
 	v.Set("SignatureMethod", pwa.Signatory.Method())
 	v.Set("SignatureVersion", pwa.Signatory.Version())
 	v.Set("Signature", base64.StdEncoding.EncodeToString(

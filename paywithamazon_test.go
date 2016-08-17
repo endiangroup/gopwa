@@ -109,7 +109,7 @@ func Test_ItEncodesAmazonRequestIntoUrlEncodedForm(t *testing.T) {
 		"AWSAccessKeyId":   []string{awsAccessKeyId},
 		"SellerId":         []string{sellerID},
 		"Timestamp":        []string{Now().UTC().Format("2006-01-02T15:04:05Z")},
-		"Version":          []string{V20130101},
+		"Version":          []string{string(V20130101)},
 		"SignatureMethod":  []string{sigMethod},
 		"SignatureVersion": []string{sigVersion},
 		"Signature":        []string{base64.StdEncoding.EncodeToString([]byte(sig))},
