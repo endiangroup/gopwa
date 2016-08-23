@@ -15,8 +15,12 @@ type OrderTotal struct {
 }
 
 func (o OrderTotal) AddValues(prefix string, v url.Values) url.Values {
-	v.Set(prefix+"Amount", o.Amount)
-	v.Set(prefix+"CurrencyCode", o.CurrencyCode)
+	if o.Amount != "" {
+		v.Set(prefix+"Amount", o.Amount)
+	}
+	if o.CurrencyCode != "" {
+		v.Set(prefix+"CurrencyCode", o.CurrencyCode)
+	}
 
 	return v
 }
@@ -27,8 +31,12 @@ type Price struct {
 }
 
 func (p Price) AddValues(prefix string, v url.Values) url.Values {
-	v.Set(prefix+"Amount", p.Amount)
-	v.Set(prefix+"CurrencyCode", p.CurrencyCode)
+	if p.Amount != "" {
+		v.Set(prefix+"Amount", p.Amount)
+	}
+	if p.CurrencyCode != "" {
+		v.Set(prefix+"CurrencyCode", p.CurrencyCode)
+	}
 
 	return v
 }
@@ -40,9 +48,15 @@ type SellerOrderAttributes struct {
 }
 
 func (s SellerOrderAttributes) AddValues(prefix string, v url.Values) url.Values {
-	v.Set(prefix+"SellerOrderId", s.SellerOrderId)
-	v.Set(prefix+"StoreName", s.StoreName)
-	v.Set(prefix+"CustomInformation", s.CustomInformation)
+	if s.SellerOrderId != "" {
+		v.Set(prefix+"SellerOrderId", s.SellerOrderId)
+	}
+	if s.StoreName != "" {
+		v.Set(prefix+"StoreName", s.StoreName)
+	}
+	if s.CustomInformation != "" {
+		v.Set(prefix+"CustomInformation", s.CustomInformation)
+	}
 
 	return v
 }
@@ -99,8 +113,12 @@ type OrderReferenceAttributes struct {
 }
 
 func (o OrderReferenceAttributes) AddValues(prefix string, v url.Values) url.Values {
-	v.Set(prefix+"PlatformId", o.PlatformId)
-	v.Set(prefix+"SellerNote", o.SellerNote)
+	if o.PlatformId != "" {
+		v.Set(prefix+"PlatformId", o.PlatformId)
+	}
+	if o.SellerNote != "" {
+		v.Set(prefix+"SellerNote", o.SellerNote)
+	}
 
 	v = o.OrderTotal.AddValues(prefix+"OrderTotal.", v)
 

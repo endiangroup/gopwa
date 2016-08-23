@@ -26,10 +26,18 @@ func (req Authorize) Action() string {
 }
 
 func (req Authorize) AddValues(v url.Values) url.Values {
-	v.Set("AmazonOrderReferenceId", req.AmazonOrderReferenceId)
-	v.Set("AuthorizationReferenceId", req.AuthorizationReferenceId)
-	v.Set("SellerAuthorizationNote", req.SellerAuthorizationNote)
-	v.Set("SoftDescriptor", req.SoftDescriptor)
+	if req.AmazonOrderReferenceId != "" {
+		v.Set("AmazonOrderReferenceId", req.AmazonOrderReferenceId)
+	}
+	if req.AuthorizationReferenceId != "" {
+		v.Set("AuthorizationReferenceId", req.AuthorizationReferenceId)
+	}
+	if req.SellerAuthorizationNote != "" {
+		v.Set("SellerAuthorizationNote", req.SellerAuthorizationNote)
+	}
+	if req.SoftDescriptor != "" {
+		v.Set("SoftDescriptor", req.SoftDescriptor)
+	}
 	v.Set("TransactionTimeout", fmt.Sprintf("%d", req.TransactionTimeout))
 	if req.CaptureNow {
 		v.Set("CaptureNow", "true")
@@ -51,8 +59,12 @@ func (req CancelOrderReference) Action() string {
 }
 
 func (req CancelOrderReference) AddValues(v url.Values) url.Values {
-	v.Set("AmazonOrderReferenceId", req.AmazonOrderReferenceId)
-	v.Set("CancelationReason", req.CancelationReason)
+	if req.AmazonOrderReferenceId != "" {
+		v.Set("AmazonOrderReferenceId", req.AmazonOrderReferenceId)
+	}
+	if req.CancelationReason != "" {
+		v.Set("CancelationReason", req.CancelationReason)
+	}
 
 	return v
 }
@@ -71,10 +83,18 @@ func (req Capture) Action() string {
 }
 
 func (req Capture) AddValues(v url.Values) url.Values {
-	v.Set("AmazonAuthorizationId", req.AmazonAuthorizationId)
-	v.Set("CaptureReferenceId", req.CaptureReferenceId)
-	v.Set("SellerCaptureNote", req.SellerCaptureNote)
-	v.Set("SoftDescriptor", req.SoftDescriptor)
+	if req.AmazonAuthorizationId != "" {
+		v.Set("AmazonAuthorizationId", req.AmazonAuthorizationId)
+	}
+	if req.CaptureReferenceId != "" {
+		v.Set("CaptureReferenceId", req.CaptureReferenceId)
+	}
+	if req.SellerCaptureNote != "" {
+		v.Set("SellerCaptureNote", req.SellerCaptureNote)
+	}
+	if req.SoftDescriptor != "" {
+		v.Set("SoftDescriptor", req.SoftDescriptor)
+	}
 
 	return req.CaptureAmount.AddValues("CaptureAmount.", v)
 }
@@ -90,8 +110,12 @@ func (req CloseAuthorization) Action() string {
 }
 
 func (req CloseAuthorization) AddValues(v url.Values) url.Values {
-	v.Set("AmazonAuthorizationId", req.AmazonAuthorizationId)
-	v.Set("ClosureReason", req.ClosureReason)
+	if req.AmazonAuthorizationId != "" {
+		v.Set("AmazonAuthorizationId", req.AmazonAuthorizationId)
+	}
+	if req.ClosureReason != "" {
+		v.Set("ClosureReason", req.ClosureReason)
+	}
 
 	return v
 }
@@ -107,8 +131,12 @@ func (req CloseOrderReference) Action() string {
 }
 
 func (req CloseOrderReference) AddValues(v url.Values) url.Values {
-	v.Set("AmazonOrderReferenceId", req.AmazonOrderReferenceId)
-	v.Set("ClosureReason", req.ClosureReason)
+	if req.AmazonOrderReferenceId != "" {
+		v.Set("AmazonOrderReferenceId", req.AmazonOrderReferenceId)
+	}
+	if req.ClosureReason != "" {
+		v.Set("ClosureReason", req.ClosureReason)
+	}
 
 	return v
 }
@@ -123,7 +151,9 @@ func (req ConfirmOrderReference) Action() string {
 }
 
 func (req ConfirmOrderReference) AddValues(v url.Values) url.Values {
-	v.Set("AmazonOrderReferenceId", req.AmazonOrderReferenceId)
+	if req.AmazonOrderReferenceId != "" {
+		v.Set("AmazonOrderReferenceId", req.AmazonOrderReferenceId)
+	}
 
 	return v
 }
@@ -142,8 +172,12 @@ func (req CreateOrderReferenceForId) Action() string {
 }
 
 func (req CreateOrderReferenceForId) AddValues(v url.Values) url.Values {
-	v.Set("Id", req.Id)
-	v.Set("IdType", req.IdType)
+	if req.Id != "" {
+		v.Set("Id", req.Id)
+	}
+	if req.IdType != "" {
+		v.Set("IdType", req.IdType)
+	}
 	if req.InheritShippingAddress {
 		v.Set("InheritShippingAddress", "true")
 	} else {
@@ -169,7 +203,9 @@ func (req GetAuthorizationDetails) Action() string {
 }
 
 func (req GetAuthorizationDetails) AddValues(v url.Values) url.Values {
-	v.Set("AmazonAuthorizationId", req.AmazonAuthorizationId)
+	if req.AmazonAuthorizationId != "" {
+		v.Set("AmazonAuthorizationId", req.AmazonAuthorizationId)
+	}
 
 	return v
 }
@@ -184,7 +220,9 @@ func (req GetCaptureDetails) Action() string {
 }
 
 func (req GetCaptureDetails) AddValues(v url.Values) url.Values {
-	v.Set("AmazonCaptureId", req.AmazonCaptureId)
+	if req.AmazonCaptureId != "" {
+		v.Set("AmazonCaptureId", req.AmazonCaptureId)
+	}
 
 	return v
 }
@@ -200,8 +238,12 @@ func (req GetOrderReferenceDetails) Action() string {
 }
 
 func (req GetOrderReferenceDetails) AddValues(v url.Values) url.Values {
-	v.Set("AmazonOrderReferenceId", req.AmazonOrderReferenceId)
-	v.Set("AddressConsentToken", req.AddressConsentToken)
+	if req.AmazonOrderReferenceId != "" {
+		v.Set("AmazonOrderReferenceId", req.AmazonOrderReferenceId)
+	}
+	if req.AddressConsentToken != "" {
+		v.Set("AddressConsentToken", req.AddressConsentToken)
+	}
 
 	return v
 }
@@ -216,7 +258,9 @@ func (req GetRefundDetails) Action() string {
 }
 
 func (req GetRefundDetails) AddValues(v url.Values) url.Values {
-	v.Set("AmazonRefundId", req.AmazonRefundId)
+	if req.AmazonRefundId != "" {
+		v.Set("AmazonRefundId", req.AmazonRefundId)
+	}
 
 	return v
 }
@@ -246,10 +290,18 @@ func (req Refund) Action() string {
 }
 
 func (req Refund) AddValues(v url.Values) url.Values {
-	v.Set("AmazonCaptureId", req.AmazonCaptureId)
-	v.Set("RefundReferenceId", req.RefundReferenceId)
-	v.Set("SellerRefundNote", req.SellerRefundNote)
-	v.Set("SoftDescriptor", req.SoftDescriptor)
+	if req.AmazonCaptureId != "" {
+		v.Set("AmazonCaptureId", req.AmazonCaptureId)
+	}
+	if req.RefundReferenceId != "" {
+		v.Set("RefundReferenceId", req.RefundReferenceId)
+	}
+	if req.SellerRefundNote != "" {
+		v.Set("SellerRefundNote", req.SellerRefundNote)
+	}
+	if req.SoftDescriptor != "" {
+		v.Set("SoftDescriptor", req.SoftDescriptor)
+	}
 
 	return req.RefundAmount.AddValues("RefundAmount.", v)
 }
@@ -265,7 +317,9 @@ func (req SetOrderReferenceDetails) Action() string {
 }
 
 func (req SetOrderReferenceDetails) AddValues(v url.Values) url.Values {
-	v.Set("AmazonOrderReferenceId", req.AmazonOrderReferenceId)
+	if req.AmazonOrderReferenceId != "" {
+		v.Set("AmazonOrderReferenceId", req.AmazonOrderReferenceId)
+	}
 
 	return req.OrderReferenceAttributes.AddValues("OrderReferenceAttributes.", v)
 }
