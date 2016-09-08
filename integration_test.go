@@ -17,19 +17,19 @@ var flagAccessKeySecret = flag.String("key-secret", "", "Sandbox MWS Access Key 
 var flagRegion = flag.Int("region", int(UK), "Region for accessing MWS (see: endpoints.go)")
 
 var (
-	setDetails                        = flag.String("set-order-reference-details", "", "AmazonOrderReferenceId for test: Test_SetOrderReferenceDetails")
-	getsDetailsWithoutShippingAddress = flag.String("get-details-without-shipping-address", "", "AmazonOrderReferenceId for test: Test_GetOrderReferenceDetails_GetsDetailsWithoutShippingAddress")
-	confirmOrderReference             = flag.String("confirm-order-reference", "", "AmazonOrderReferenceId for test: Test_ConfirmOrderReference")
-	cancelOrderReference              = flag.String("cancel-order-reference", "", "AmazonOrderReferenceId for test: Test_CancelOrderReference")
-	closeOrderReference               = flag.String("close-order-reference", "", "AmazonOrderReferenceId for test: Test_CloseOrderReference")
-	authorize                         = flag.String("authorize", "", "AmazonOrderReferenceId for test: Test_Authorize")
-	authorizeCapture                  = flag.String("authorize-capture", "", "AmazonOrderReferenceId for test: Test_Authorize_Capture")
-	getAuthorizationDetails           = flag.String("get-authorization-details", "", "AmazonOrderReferenceId for test: Test_GetAuthorizationDetails")
-	closeAuthorization                = flag.String("close-authorization", "", "AmazonOrderReferenceId for test: Test_CloseAuthorization")
-	capture                           = flag.String("capture", "", "AmazonOrderReferenceId for test: Test_Capture")
-	getCaptureDetails                 = flag.String("get-capture-details", "", "AmazonOrderReferenceId for test: Test_GetCaptureDetails")
-	refund                            = flag.String("refund", "", "AmazonOrderReferenceId for test: Test_Refund")
-	getRefundDetails                  = flag.String("get-refund-details", "", "AmazonOrderReferenceId for test: Test_GetRefundDetails")
+	setOrderReferenceDetails = flag.String("set-order-reference-details", "", "AmazonOrderReferenceId for test: Test_SetOrderReferenceDetails")
+	getOrderReferenceDetails = flag.String("get-order-reference-details", "", "AmazonOrderReferenceId for test: Test_GetOrderReferenceDetails")
+	confirmOrderReference    = flag.String("confirm-order-reference", "", "AmazonOrderReferenceId for test: Test_ConfirmOrderReference")
+	cancelOrderReference     = flag.String("cancel-order-reference", "", "AmazonOrderReferenceId for test: Test_CancelOrderReference")
+	closeOrderReference      = flag.String("close-order-reference", "", "AmazonOrderReferenceId for test: Test_CloseOrderReference")
+	authorize                = flag.String("authorize", "", "AmazonOrderReferenceId for test: Test_Authorize")
+	authorizeCapture         = flag.String("authorize-capture", "", "AmazonOrderReferenceId for test: Test_Authorize_Capture")
+	getAuthorizationDetails  = flag.String("get-authorization-details", "", "AmazonOrderReferenceId for test: Test_GetAuthorizationDetails")
+	closeAuthorization       = flag.String("close-authorization", "", "AmazonOrderReferenceId for test: Test_CloseAuthorization")
+	capture                  = flag.String("capture", "", "AmazonOrderReferenceId for test: Test_Capture")
+	getCaptureDetails        = flag.String("get-capture-details", "", "AmazonOrderReferenceId for test: Test_GetCaptureDetails")
+	refund                   = flag.String("refund", "", "AmazonOrderReferenceId for test: Test_Refund")
+	getRefundDetails         = flag.String("get-refund-details", "", "AmazonOrderReferenceId for test: Test_GetRefundDetails")
 )
 
 func Test_GetServieStatus(t *testing.T) {
@@ -48,11 +48,11 @@ func Test_GetServieStatus(t *testing.T) {
 
 // Generate a new Amazon Order Reference ID and add the followng flag to the test:
 //   -get-details-without-shipping-address={amazonOrderReferenceId}
-func Test_GetOrderReferenceDetails_GetsDetailsWithoutShippingAddress(t *testing.T) {
-	if !requiredFlagsSet(*getsDetailsWithoutShippingAddress) {
+func Test_GetOrderReferenceDetails(t *testing.T) {
+	if !requiredFlagsSet(*getOrderReferenceDetails) {
 		t.SkipNow()
 	}
-	amazonOrderReferenceId := *getsDetailsWithoutShippingAddress
+	amazonOrderReferenceId := *getOrderReferenceDetails
 	pwa := setupPwa()
 
 	resp, err := pwa.GetOrderReferenceDetails(amazonOrderReferenceId, "")
@@ -71,13 +71,13 @@ func Test_GetOrderReferenceDetails_GetsDetailsWithoutShippingAddress(t *testing.
 // Generate a new Amazon Order Reference ID and add the followng flag to the test:
 //   -set-order-reference-details={amazonOrderReferenceId}
 func Test_SetOrderReferenceDetails(t *testing.T) {
-	if !requiredFlagsSet(*setDetails) {
+	if !requiredFlagsSet(*setOrderReferenceDetails) {
 		t.SkipNow()
 	}
-	amazonOrderReferenceId := *setDetails
+	amazonOrderReferenceId := *setOrderReferenceDetails
 	pwa := setupPwa()
 
-	resp := setOrderReferenceDetails(t, amazonOrderReferenceId, pwa)
+	resp := setOrderRefDetails(t, amazonOrderReferenceId, pwa)
 
 	assert.NotNil(t, resp.Result)
 	assert.NotEmpty(t, resp.Metadata.RequestId)
@@ -104,7 +104,7 @@ func Test_ConfirmOrderReference(t *testing.T) {
 	amazonOrderReferenceId := *confirmOrderReference
 	pwa := setupPwa()
 
-	setOrderReferenceDetails(t, amazonOrderReferenceId, pwa)
+	setOrderRefDetails(t, amazonOrderReferenceId, pwa)
 
 	confirmOrderRefResp, err := pwa.ConfirmOrderReference(amazonOrderReferenceId)
 	assert.NoError(t, err)
@@ -128,7 +128,7 @@ func Test_CancelOrderReference(t *testing.T) {
 	amazonOrderReferenceId := *cancelOrderReference
 	pwa := setupPwa()
 
-	setOrderReferenceDetails(t, amazonOrderReferenceId, pwa)
+	setOrderRefDetails(t, amazonOrderReferenceId, pwa)
 
 	_, err := pwa.ConfirmOrderReference(amazonOrderReferenceId)
 	assert.NoError(t, err)
@@ -156,7 +156,7 @@ func Test_CloseOrderReference(t *testing.T) {
 	amazonOrderReferenceId := *closeOrderReference
 	pwa := setupPwa()
 
-	setOrderReferenceDetails(t, amazonOrderReferenceId, pwa)
+	setOrderRefDetails(t, amazonOrderReferenceId, pwa)
 
 	_, err := pwa.ConfirmOrderReference(amazonOrderReferenceId)
 	assert.NoError(t, err)
@@ -184,7 +184,7 @@ func Test_Authorize(t *testing.T) {
 	amazonOrderReferenceId := *authorize
 	pwa := setupPwa()
 
-	setOrderReferenceDetails(t, amazonOrderReferenceId, pwa)
+	setOrderRefDetails(t, amazonOrderReferenceId, pwa)
 
 	_, err := pwa.ConfirmOrderReference(amazonOrderReferenceId)
 	assert.NoError(t, err)
@@ -212,7 +212,7 @@ func Test_Authorize_Capture(t *testing.T) {
 	amazonOrderReferenceId := *authorizeCapture
 	pwa := setupPwa()
 
-	setOrderReferenceDetails(t, amazonOrderReferenceId, pwa)
+	setOrderRefDetails(t, amazonOrderReferenceId, pwa)
 
 	_, err := pwa.ConfirmOrderReference(amazonOrderReferenceId)
 	assert.NoError(t, err)
@@ -240,7 +240,7 @@ func Test_GetAuthorizationDetails(t *testing.T) {
 	amazonOrderReferenceId := *getAuthorizationDetails
 	pwa := setupPwa()
 
-	setOrderReferenceDetails(t, amazonOrderReferenceId, pwa)
+	setOrderRefDetails(t, amazonOrderReferenceId, pwa)
 
 	_, err := pwa.ConfirmOrderReference(amazonOrderReferenceId)
 	assert.NoError(t, err)
@@ -270,7 +270,7 @@ func Test_CloseAuthorization(t *testing.T) {
 	amazonOrderReferenceId := *closeAuthorization
 	pwa := setupPwa()
 
-	setOrderReferenceDetails(t, amazonOrderReferenceId, pwa)
+	setOrderRefDetails(t, amazonOrderReferenceId, pwa)
 
 	_, err := pwa.ConfirmOrderReference(amazonOrderReferenceId)
 	assert.NoError(t, err)
@@ -304,7 +304,7 @@ func Test_Capture(t *testing.T) {
 	amazonOrderReferenceId := *capture
 	pwa := setupPwa()
 
-	setOrderReferenceDetails(t, amazonOrderReferenceId, pwa)
+	setOrderRefDetails(t, amazonOrderReferenceId, pwa)
 
 	_, err := pwa.ConfirmOrderReference(amazonOrderReferenceId)
 	assert.NoError(t, err)
@@ -334,7 +334,7 @@ func Test_GetCaptureDetails(t *testing.T) {
 	amazonOrderReferenceId := *getCaptureDetails
 	pwa := setupPwa()
 
-	setOrderReferenceDetails(t, amazonOrderReferenceId, pwa)
+	setOrderRefDetails(t, amazonOrderReferenceId, pwa)
 
 	_, err := pwa.ConfirmOrderReference(amazonOrderReferenceId)
 	assert.NoError(t, err)
@@ -367,7 +367,7 @@ func Test_Refund(t *testing.T) {
 	amazonOrderReferenceId := *refund
 	pwa := setupPwa()
 
-	setOrderReferenceDetails(t, amazonOrderReferenceId, pwa)
+	setOrderRefDetails(t, amazonOrderReferenceId, pwa)
 
 	_, err := pwa.ConfirmOrderReference(amazonOrderReferenceId)
 	assert.NoError(t, err)
@@ -400,7 +400,7 @@ func Test_GetRefundDetails(t *testing.T) {
 	amazonOrderReferenceId := *getRefundDetails
 	pwa := setupPwa()
 
-	setOrderReferenceDetails(t, amazonOrderReferenceId, pwa)
+	setOrderRefDetails(t, amazonOrderReferenceId, pwa)
 
 	_, err := pwa.ConfirmOrderReference(amazonOrderReferenceId)
 	assert.NoError(t, err)
@@ -430,7 +430,7 @@ func setupPwa() *PayWithAmazon {
 	return New(*flagSellerID, *flagAccessKeyID, *flagAccessKeySecret, Region(*flagRegion), Sandbox)
 }
 
-func setOrderReferenceDetails(t *testing.T, amazonOrderReferenceId string, pwa *PayWithAmazon) *SetOrderReferenceDetailsResponse {
+func setOrderRefDetails(t *testing.T, amazonOrderReferenceId string, pwa *PayWithAmazon) *SetOrderReferenceDetailsResponse {
 	resp, err := pwa.SetOrderReferenceDetails(
 		amazonOrderReferenceId,
 		OrderReferenceAttributes{
