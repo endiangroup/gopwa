@@ -231,3 +231,10 @@ type Message struct {
 	Locale string
 	Text   string
 }
+
+type GetServiceStatusResult struct {
+	Status    string
+	Timestamp time.Time
+	MessageId string
+	Messages  []Message
+}
