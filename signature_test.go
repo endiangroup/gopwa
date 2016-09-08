@@ -22,7 +22,7 @@ func Test_ItEscapesCharactersInStringToSign(t *testing.T) {
 	queryParams := url.Values{
 		"Action":         []string{"~DescribeJobFlows~"},
 		"Version":        []string{"*2009-03-31*"},
-		"AWSAccessKeyId": []string{"AKIAIOSFODNN7+EXAMPLE+"},
+		"AWSAccessKeyId": []string{"AKIAIOSFODNN7+ EXAMPLE+"},
 		"A+B":            []string{""},
 		"A*B":            []string{""},
 		"A~B":            []string{""},
@@ -32,14 +32,13 @@ func Test_ItEscapesCharactersInStringToSign(t *testing.T) {
 
 	assert.NotContains(t, toBeSigned, "+")
 	assert.NotContains(t, toBeSigned, "*")
-	assert.NotContains(t, toBeSigned, "~")
 
-	assert.Contains(t, toBeSigned, "AKIAIOSFODNN7%20EXAMPLE%20")
+	assert.Contains(t, toBeSigned, "AKIAIOSFODNN7%2B%20EXAMPLE%2B")
 	assert.Contains(t, toBeSigned, "%2A2009-03-31%2A")
-	assert.Contains(t, toBeSigned, "%7EDescribeJobFlows%7E")
-	assert.Contains(t, toBeSigned, "A%20B")
+	assert.Contains(t, toBeSigned, "~DescribeJobFlows~")
+	assert.Contains(t, toBeSigned, "A%2BB")
 	assert.Contains(t, toBeSigned, "A%2AB")
-	assert.Contains(t, toBeSigned, "A%7EB")
+	assert.Contains(t, toBeSigned, "A~B")
 }
 
 // See: http://docs.aws.amazon.com/general/latest/gr/signature-version-2.html
