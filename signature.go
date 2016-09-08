@@ -8,9 +8,7 @@ import (
 )
 
 var escapeCharactersTo = map[string]string{
-	// Replaces encoded '+' (%2B) with encoded ' ' (%20)
-	"%2B": "%20",
-	"~":   "%7E",
+	"+": "%20",
 }
 
 type Signatory interface {
