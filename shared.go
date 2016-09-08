@@ -92,17 +92,31 @@ type Constraint struct {
 }
 
 type OrderReferenceStatus struct {
-	State               string
+	State               OrderReferenceState
 	LastUpdateTimestamp time.Time
 	ReasonCode          string
 	ReasonDescription   string
 }
 
-type Status struct {
-	State               string
+type StatusCommon struct {
 	LastUpdateTimestamp time.Time
 	ReasonCode          string
 	ReasonDescription   string
+}
+
+type CaptureStatus struct {
+	State CaptureState
+	StatusCommon
+}
+
+type AuthorizationStatus struct {
+	State AuthorisationState
+	StatusCommon
+}
+
+type RefundStatus struct {
+	State RefundState
+	StatusCommon
 }
 
 type OrderReferenceAttributes struct {
@@ -154,7 +168,7 @@ type AuthorizationDetails struct {
 	IdList                      []string
 	CreationTimestamp           time.Time
 	ExpirationTimestamp         time.Time
-	AuthorizationStatus         Status
+	AuthorizationStatus         AuthorizationStatus
 	SoftDecline                 bool
 	CaptureNow                  bool
 	SoftDescriptor              string
@@ -196,7 +210,7 @@ type BillingAgreementLimits struct {
 }
 
 type BillingAgreementStatus struct {
-	State                string
+	State                BillingAgreementState
 	LastUpdatedTimestamp time.Time
 	ReasonCode           string
 	ReasonDescription    string
@@ -211,7 +225,7 @@ type CaptureDetails struct {
 	CaptureFee         Price
 	IdList             []string
 	CreationTimestamp  time.Time
-	CaptureStatus      Status
+	CaptureStatus      CaptureStatus
 	SoftDescriptor     string
 }
 
@@ -223,7 +237,7 @@ type RefundDetails struct {
 	RefundAmount      Price
 	FeeRefunded       Price
 	CreationTimestamp time.Time
-	RefundStatus      Status
+	RefundStatus      RefundStatus
 	SoftDescriptor    string
 }
 
