@@ -55,7 +55,7 @@ type CancelOrderReference struct {
 }
 
 func (req CancelOrderReference) Action() string {
-	return "GetOrderReferenceDetails"
+	return "CancelOrderReference"
 }
 
 func (req CancelOrderReference) AddValues(v url.Values) url.Values {
