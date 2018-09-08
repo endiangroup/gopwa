@@ -1,5 +1,7 @@
 # Go PayWithAmazon
 
+[![GoDoc](https://godoc.org/github.com/endiangroup/gopwa?status.svg)](https://godoc.org/github.com/endiangroup/gopwa) [![Go Report Card](https://goreportcard.com/badge/github.com/endiangroup/gopwa)](https://goreportcard.com/report/github.com/endiangroup/gopwa)
+
 Go PayWithAmazon (gopwa) is an api wrapper around the Amazon Payments endpoints. No additional dependencies are required to use this library.
 
 [See the official Amazon Payments docs for more information](https://payments.amazon.co.uk/developer/documentation/lpwa/201909330)
