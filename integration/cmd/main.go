@@ -6,7 +6,7 @@ import (
 	"log"
 	"net/http"
 
-	"bitbucket.org/homemade/gopwa/integration"
+	"github.com/endiangroup/gopwa/integration"
 )
 
 var clientIDFlag = flag.String("client-id", "", "MWS Client ID")

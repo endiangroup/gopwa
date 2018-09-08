@@ -58,7 +58,7 @@ Error handling (note this is very crude):
 
 ### Unit Tests
 
-Simply run `go test bitbucket.org/homemade/gopwa` to run all unit tests
+Simply run `go test github.com/endiangroup/gopwa` to run all unit tests
 
 ### Integration Tests
 
@@ -78,7 +78,7 @@ To run the integration tests you need to do some setup:
 To run the tests open 2 terminals, in the first:
 
 ```bash
-$ go run $GOPATH/src/bitbucket.org/homemade/gopwa/integration/cmd/main.go -client-id={Client ID} -seller-id={Seller ID}
+$ go run $GOPATH/src/github.com/endiangroup/gopwa/integration/cmd/main.go -client-id={Client ID} -seller-id={Seller ID}
 ```
 
 This will start a http service at `http://localhost:5000/`:
@@ -93,21 +93,21 @@ This will start a http service at `http://localhost:5000/`:
 In the second terminal run:
 
 ```bash
-$ go test -tags integration $GOPATH/src/bitbucket.org/homemade/gopwa/ -seller-id={Seller ID} -key-id={Access Key ID} -key-secret={Access Key Secret} -{test-name}={Amazon Order Reference ID}
+$ go test -tags integration $GOPATH/src/github.com/endiangroup/gopwa/ -seller-id={Seller ID} -key-id={Access Key ID} -key-secret={Access Key Secret} -{test-name}={Amazon Order Reference ID}
 ```
 
 Where `{test-name}` is replace with one of the integration test flag names, you can see them with the following command:
 
 ```bash
-$ cat $GOPATH/src/bitbucket.org/homemade/gopwa/integration_test.go | grep 'flag\.String'
+$ cat $GOPATH/src/github.com/endiangroup/gopwa/integration_test.go | grep 'flag\.String'
 ```
 
 Examples:
 
 ```bash
-$ go test -tags integration $GOPATH/src/bitbucket.org/homemade/gopwa/ -seller-id={Seller ID} -key-id={Access Key ID} -key-secret={Access Key Secret} -authorize={Amazon Order Reference ID}
-$ go test -tags integration $GOPATH/src/bitbucket.org/homemade/gopwa/ -seller-id={Seller ID} -key-id={Access Key ID} -key-secret={Access Key Secret} -capture={Amazon Order Reference ID}
-$ go test -tags integration $GOPATH/src/bitbucket.org/homemade/gopwa/ -seller-id={Seller ID} -key-id={Access Key ID} -key-secret={Access Key Secret} -close-order-reference={Amazon Order Reference ID}
+$ go test -tags integration $GOPATH/src/github.com/endiangroup/gopwa/ -seller-id={Seller ID} -key-id={Access Key ID} -key-secret={Access Key Secret} -authorize={Amazon Order Reference ID}
+$ go test -tags integration $GOPATH/src/github.com/endiangroup/gopwa/ -seller-id={Seller ID} -key-id={Access Key ID} -key-secret={Access Key Secret} -capture={Amazon Order Reference ID}
+$ go test -tags integration $GOPATH/src/github.com/endiangroup/gopwa/ -seller-id={Seller ID} -key-id={Access Key ID} -key-secret={Access Key Secret} -close-order-reference={Amazon Order Reference ID}
 ```
 
 ## TODO:
