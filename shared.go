@@ -256,3 +256,41 @@ type GetServiceStatusResult struct {
 	MessageId string
 	Messages  []Message
 }
+
+type OrderAttributes struct {
+	OrderTotal                       OrderTotal
+	PlatformID                       string
+	SellerNote                       string
+	SellerOrderAttributes            SellerOrderAttributes
+	PaymentServiceProviderAttributes PaymentServiceProviderAttributes
+}
+
+func (o OrderAttributes) AddValues(prefix string, v url.Values) url.Values {
+	if o.PlatformID != "" {
+		v.Set(prefix+"PlatformID", o.PlatformID)
+	}
+	if o.SellerNote != "" {
+		v.Set(prefix+"SellerNote", o.SellerNote)
+	}
+
+	v = o.OrderTotal.AddValues(prefix+"OrderTotal.", v)
+	v = o.SellerOrderAttributes.AddValues(prefix+"SellerOrderAttributes.", v)
+
+	return o.PaymentServiceProviderAttributes.AddValues(prefix+"PaymentServiceProviderAttributes.", v)
+}
+
+type PaymentServiceProviderAttributes struct {
+	PaymentServiceProviderId      string
+	PaymentServiceProviderOrderId string
+}
+
+func (p PaymentServiceProviderAttributes) AddValues(prefix string, v url.Values) url.Values {
+	if p.PaymentServiceProviderId != "" {
+		v.Set(prefix+"PaymentServiceProviderId", p.PaymentServiceProviderId)
+	}
+	if p.PaymentServiceProviderOrderId != "" {
+		v.Set(prefix+"PaymentServiceProviderOrderId", p.PaymentServiceProviderOrderId)
+	}
+
+	return v
+}

@@ -110,3 +110,12 @@ type SetOrderReferenceDetailsResponse struct {
 type SetOrderReferenceDetailsResult struct {
 	OrderReferenceDetails OrderReferenceDetails
 }
+
+type SetOrderAttributesResponse struct {
+	Result   *SetOrderAttributesResult `xml:"SetOrderAttributesResult"`
+	Metadata ResponseMetadata          `xml:"ResponseMetadata"`
+}
+
+type SetOrderAttributesResult struct {
+	OrderReferenceDetails OrderReferenceDetails
+}

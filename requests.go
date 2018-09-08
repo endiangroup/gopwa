@@ -340,3 +340,21 @@ func (req SetOrderReferenceDetails) AddValues(v url.Values) url.Values {
 
 	return req.OrderReferenceAttributes.AddValues("OrderReferenceAttributes.", v)
 }
+
+// See: https://pay.amazon.com/uk/developer/documentation/apireference/22N636REVGXTPNR
+type SetOrderAttributes struct {
+	AmazonOrderReferenceId string
+	OrderAttributes        OrderAttributes
+}
+
+func (req SetOrderAttributes) Action() string {
+	return "SetOrderAttributes"
+}
+
+func (req SetOrderAttributes) AddValues(v url.Values) url.Values {
+	if req.AmazonOrderReferenceId != "" {
+		v.Set("AmazonOrderReferenceId", req.AmazonOrderReferenceId)
+	}
+
+	return req.OrderAttributes.AddValues("OrderAttributes.", v)
+}

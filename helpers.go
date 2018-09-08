@@ -240,3 +240,17 @@ func (pwa PayWithAmazon) SetOrderReferenceDetails(amazonOrderReferenceId string,
 
 	return result, nil
 }
+
+func (pwa PayWithAmazon) SetOrderAttributes(amazonOrderReferenceId string, orderAttributes OrderAttributes) (*SetOrderAttributesResponse, error) {
+	result := &SetOrderAttributesResponse{}
+	request := SetOrderAttributes{
+		AmazonOrderReferenceId: amazonOrderReferenceId,
+		OrderAttributes:        orderAttributes,
+	}
+
+	if err := pwa.Do(request, result); err != nil {
+		return result, err
+	}
+
+	return result, nil
+}
