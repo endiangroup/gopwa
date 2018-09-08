@@ -323,10 +323,10 @@ func Test_ItRetriesFaild5XXRequestsWithBackoffDurationWhenHandleThrottlingIsTrue
 
 	assert.Len(t, callTimestamps, len(BackoffDurations))
 
-	assert.WithinDuration(t, now, callTimestamps[0], 10*time.Millisecond)
-	assert.WithinDuration(t, now.Add(BackoffDurations[1]), callTimestamps[1], 10*time.Millisecond)
-	assert.WithinDuration(t, now.Add(BackoffDurations[1]+BackoffDurations[2]), callTimestamps[2], 10*time.Millisecond)
-	assert.WithinDuration(t, now.Add(BackoffDurations[1]+BackoffDurations[2]+BackoffDurations[3]), callTimestamps[3], 10*time.Millisecond)
+	assert.WithinDuration(t, now, callTimestamps[0], 12*time.Millisecond)
+	assert.WithinDuration(t, now.Add(BackoffDurations[1]), callTimestamps[1], 12*time.Millisecond)
+	assert.WithinDuration(t, now.Add(BackoffDurations[1]+BackoffDurations[2]), callTimestamps[2], 12*time.Millisecond)
+	assert.WithinDuration(t, now.Add(BackoffDurations[1]+BackoffDurations[2]+BackoffDurations[3]), callTimestamps[3], 12*time.Millisecond)
 }
 
 func Test_ItDoesntRetryFaildRequestsWhenHandleThrottlingIsFalse(t *testing.T) {
