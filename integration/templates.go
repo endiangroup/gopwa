@@ -28,15 +28,15 @@ window.onAmazonPaymentsReady = function(){
 
 		onError: function(error) { 
 			// your error handling code.
-			// alert("The following error occurred: " 
-			//        + error.getErrorCode() 
-			//        + ' - ' + error.getErrorMessage());
+			alert("The following error occurred: " 
+			       + error.getErrorCode() 
+			       + ' - ' + error.getErrorMessage());
 		} 
 	});
 }
 </script>
 
-<script async="async" type='text/javascript' src='https://static-eu.payments-amazon.com/OffAmazonPayments/uk/sandbox/lpa/js/Widgets.js'>
+<script async="async" type='text/javascript' src='https://static-eu.payments-amazon.com/OffAmazonPayments/gbp/sandbox/lpa/js/Widgets.js'>
 </script>
 <script type="text/javascript">
 document.getElementById('Logout').onclick = function() {
