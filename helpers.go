@@ -154,6 +154,19 @@ func (pwa PayWithAmazon) GetCaptureDetails(amazonCaptureId string) (*GetCaptureD
 	return result, nil
 }
 
+func (pwa PayWithAmazon) GetMerchantAccountStatus(sellerId string) (*GetMerchantAccountStatusResponse, error) {
+	result := &GetMerchantAccountStatusResponse{}
+	request := GetMerchantAccountStatus{
+		SellerId: sellerId,
+	}
+
+	if err := pwa.Do(request, result); err != nil {
+		return result, err
+	}
+
+	return result, nil
+}
+
 func (pwa PayWithAmazon) GetOrderReferenceDetails(amazonOrderReferenceId, addressConsentToken string) (*GetOrderReferenceDetailsResponse, error) {
 	result := &GetOrderReferenceDetailsResponse{}
 	request := GetOrderReferenceDetails{

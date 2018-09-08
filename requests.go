@@ -227,6 +227,23 @@ func (req GetCaptureDetails) AddValues(v url.Values) url.Values {
 	return v
 }
 
+// See: https://pay.amazon.com/uk/developer/documentation/apireference/82TPMDNUCGPGUK8
+type GetMerchantAccountStatus struct {
+	SellerId string
+}
+
+func (req GetMerchantAccountStatus) Action() string {
+	return "GetMerchantAccountStatus"
+}
+
+func (req GetMerchantAccountStatus) AddValues(v url.Values) url.Values {
+	if req.SellerId != "" {
+		v.Set("SellerId", req.SellerId)
+	}
+
+	return v
+}
+
 // See: https://payments.amazon.co.uk/developer/documentation/apireference/201751970
 type GetOrderReferenceDetails struct {
 	AmazonOrderReferenceId string

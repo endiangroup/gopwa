@@ -61,6 +61,15 @@ type GetCaptureDetailsResult struct {
 	CaptureDetails CaptureDetails
 }
 
+type GetMerchantAccountStatusResponse struct {
+	Result   *GetMerchantAccountStatusResult `xml:"GetMerchantAccountStatusResult"`
+	Metadata ResponseMetadata                `xml:"ResponseMetadata"`
+}
+
+type GetMerchantAccountStatusResult struct {
+	AccountStatus string
+}
+
 type GetOrderReferenceDetailsResponse struct {
 	Result   *GetOrderReferenceDetailsResult `xml:"GetOrderReferenceDetailsResult"`
 	Metadata ResponseMetadata                `xml:"ResponseMetadata"`
