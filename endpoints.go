@@ -30,5 +30,5 @@ type Environment string
 
 const (
 	Sandbox Environment = "/OffAmazonPayments_Sandbox"
-	Live                = "/OffAmazonPayments"
+	Live    Environment = "/OffAmazonPayments"
 )
