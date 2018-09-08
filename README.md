@@ -18,42 +18,42 @@ Go PayWithAmazon (gopwa) is an api wrapper around the Amazon Payments endpoints.
 
 Construct new `PayWithAmazon` object:
 ```go
-	pwa := gopwa.New("my-seller-id", "my-access-key", "my-access-secret", gopwa.UK, gopwa.Sandbox)
+pwa := gopwa.New("my-seller-id", "my-access-key", "my-access-secret", gopwa.UK, gopwa.Sandbox)
 ```
 
 Get an orders reference details:
 ```go
-	orderRefResp, err := pwa.GetOrderReferenceDetails(anOrderReferenceId, "")
-	if err != nil {
-		return err
-	}
+orderRefResp, err := pwa.GetOrderReferenceDetails(anOrderReferenceId, "")
+if err != nil {
+	return err
+}
 
-	fmt.Printf("Request ID: %s", orderRefResp.Metadata.RequestId)
+fmt.Printf("Request ID: %s", orderRefResp.Metadata.RequestId)
 
-	fmt.Printf("Order Reference ID: %s", orderRefResp.Result.AmazonOrderReferenceId)
-	fmt.Printf("Seller Note: %s", orderRefResp.Result.SellerNote)
+fmt.Printf("Order Reference ID: %s", orderRefResp.Result.AmazonOrderReferenceId)
+fmt.Printf("Seller Note: %s", orderRefResp.Result.SellerNote)
 ```
 
 Error handling (note this is very crude):
 ```go
-	func getServiceStatus(pwa PayWithAmazon) (string, error) {
-		serviceStatusResp, err := pwa.GetServiceStatus()
-		if err != nil {
-			log.Printf("getServiceStatus: %s", err.Error())
+func getServiceStatus(pwa PayWithAmazon) (string, error) {
+	serviceStatusResp, err := pwa.GetServiceStatus()
+	if err != nil {
+		log.Printf("getServiceStatus: %s", err.Error())
 
-			if errResp, ok := err.(*gopwa.ErrorResponse); ok {
-				if errResp.StatusCode == 503 {
-					// Backoff and retry request
-					time.Sleep(1 * time.Second)
-					return getServiceStatus(pwa)
-				}
+		if errResp, ok := err.(*gopwa.ErrorResponse); ok {
+			if errResp.StatusCode == 503 {
+				// Backoff and retry request
+				time.Sleep(1 * time.Second)
+				return getServiceStatus(pwa)
 			}
-
-			return "", err
 		}
 
-		return serviceStatusResp.Result.Status, nil
+		return "", err
 	}
+
+	return serviceStatusResp.Result.Status, nil
+}
 ```
 
 ## Tests
