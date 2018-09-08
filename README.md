@@ -5,9 +5,9 @@ Go PayWithAmazon (gopwa) is an api wrapper around the Amazon Payments endpoints.
 [See the official Amazon Payments docs for more information](https://payments.amazon.co.uk/developer/documentation/lpwa/201909330)
 
 ## Features:
-- Comprehensive suite of native types for all requests and responses (17/08/2016)
+- Comprehensive suite of native types for all requests and responses for non-recurring endpoints (08/09/2018)
 - Supports both sandbox and live endpoints
-- Supports all known amazon payment regions (17/08/2016)
+- Supports all amazon payment regions (17/08/2016)
 - Error handling with native type
 - New or custom request/responses are supported via interfaces (see `paywithamazon.go: PayWithAmazon.Do()`)
 - Optionally supports retrying throttled requests with exponential backoff (disabled by default, enable with: `PayWithAmazon.HandleThrottling(true)`)
@@ -114,3 +114,4 @@ $ go test -tags integration $GOPATH/src/bitbucket.org/homemade/gopwa/ -seller-id
 - Validation of request parameters (add a `Validate()` method to `Request` interface?)
 - Automate integration tests
 - ~~Optional retry handling of failed requests (see official python library for example)~~
+- Add recurring payment specific helpers, requests and responses
