@@ -227,6 +227,8 @@ type CaptureDetails struct {
 	CreationTimestamp  time.Time
 	CaptureStatus      CaptureStatus
 	SoftDescriptor     string
+	ConvertedAmount    Price
+	ConversionRate     string
 }
 
 type RefundDetails struct {
@@ -239,6 +241,8 @@ type RefundDetails struct {
 	CreationTimestamp time.Time
 	RefundStatus      RefundStatus
 	SoftDescriptor    string
+	ConvertedAmount   Price
+	ConversionRate    string
 }
 
 type Message struct {
